@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getToken } from 'next-auth/jwt'
 
-export default auth((req) => {
-  const { nextUrl, auth: session } = req as any
-  const pathname = nextUrl.pathname
+export async function middleware(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.AUTH_SECRET })
+  const { pathname } = req.nextUrl
 
-  const isLoggedIn = !!session
-  const role = session?.user?.role
+  const isLoggedIn = !!token
+  const role = token?.role as string | undefined
 
   // Admin routes require admin role
   if (pathname.startsWith('/admin')) {
@@ -24,7 +24,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: ['/admin/:path*', '/painel/:path*'],
