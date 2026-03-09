@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "concurrently \"next dev\" \"tailwindcss -i ./src/app/globals.css -o ./src/app/output.css --watch\"",
     "tailwind:watch": "tailwindcss -i ./src/app/globals.css -o ./src/app/output.css --watch",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
