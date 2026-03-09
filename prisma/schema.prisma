@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Gerente {
+  id               Int            @id @default(autoincrement())
+  nome             String
+  telefone         String
+  idadeDiscipulado String
+  discipuladores   Discipulador[]
+  createdAt        DateTime       @default(now())
+}
+
+model Discipulador {
+  id               Int          @id @default(autoincrement())
+  nome             String
+  telefone         String
+  email            String       @unique
+  senha            String
+  sexo             String       @default("Masculino")
+  idadeDiscipulado String
+  nomeDiscipulado  String
+  gerenteId        Int
+  gerente          Gerente      @relation(fields: [gerenteId], references: [id])
+  discipulos       Discipulo[]
+  frequencias      Frequencia[]
+  createdAt        DateTime     @default(now())
+}
+
+model Discipulo {
+  id             String       @id @default(uuid())
+  nome           String
+  telefone       String
+  idade          Int
+  sexo           String       @default("Masculino")
+  estrutura      String
+  goe            Boolean      @default(false)
+  visitante      Boolean      @default(false)
+  discipuladorId Int
+  discipulador   Discipulador @relation(fields: [discipuladorId], references: [id])
+  frequencias    Frequencia[]
+  createdAt      DateTime     @default(now())
+}
+
+model Frequencia {
+  id             Int          @id @default(autoincrement())
+  data           DateTime
+  presente       Boolean      @default(false)
+  discipuloId    String
+  discipuloIdent Discipulo    @relation(fields: [discipuloId], references: [id], onDelete: Cascade)
+  discipuladorId Int
+  discipulador   Discipulador @relation(fields: [discipuladorId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@unique([discipuloId, data])
+}
